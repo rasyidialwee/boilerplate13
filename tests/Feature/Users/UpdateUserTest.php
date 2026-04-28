@@ -62,4 +62,3 @@ it('updates a user and syncs their role assignment', function () {
     expect($user->hasRole('lead'))->toBeTrue();
     expect(password_verify('new-password', $user->password))->toBeTrue();
 });
-

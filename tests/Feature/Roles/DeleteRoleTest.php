@@ -12,4 +12,3 @@ it('deletes a role and clears the permission cache', function () {
 
     expect(Role::whereName('transient-role')->exists())->toBeFalse();
 });
-

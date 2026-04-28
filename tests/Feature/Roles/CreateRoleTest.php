@@ -1,7 +1,6 @@
 <?php
 
 use Inertia\Testing\AssertableInertia as Assert;
-use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 it('allows superadmins to create roles with permissions', function () {
@@ -35,4 +34,3 @@ it('shows all permissions when rendering the create form', function () {
             ->where('permissions.0.name', 'edit articles')
         );
 });
-

@@ -42,4 +42,3 @@ it('updates a role and syncs its permissions', function () {
     expect($role->name)->toBe('log-manager');
     expect($role->permissions->pluck('name')->all())->toEqualCanonicalizing(['edit logs', 'export logs']);
 });
-

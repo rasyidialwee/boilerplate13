@@ -67,4 +67,3 @@ it('denies access to the users listing when lacking permissions', function () {
 
     $this->get(route('users.index'))->assertForbidden();
 });
-

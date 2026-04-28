@@ -40,4 +40,3 @@ it('shows the available roles when rendering the create form', function () {
             ->where('roles.0.name', 'editor')
         );
 });
-

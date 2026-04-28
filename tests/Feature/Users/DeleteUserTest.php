@@ -19,4 +19,3 @@ it('deletes other users but prevents self-deletion', function () {
 
     $this->assertDatabaseHas('users', ['id' => $admin->id]);
 });
-

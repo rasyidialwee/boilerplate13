@@ -1,7 +1,6 @@
 <?php
 
 use Inertia\Testing\AssertableInertia as Assert;
-use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 it('lists roles honoring search filters and eager loads permissions', function () {
@@ -74,4 +73,3 @@ it('denies access to the roles index for non-superadmins', function () {
 
     $this->get(route('roles.index'))->assertForbidden();
 });
-
