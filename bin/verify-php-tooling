@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+pass=0
+fail=0
+
+check() {
+  local label="$1"
+  shift
+
+  if "$@" >/dev/null 2>&1; then
+    echo "  [PASS] $label"
+    pass=$((pass + 1))
+  else
+    echo "  [FAIL] $label"
+    fail=$((fail + 1))
+  fi
+}
+
+echo
+echo "=== PHP Tooling Verification ==="
+echo
+
+echo "1. Wrapper script"
+check "bin/php is executable" test -x bin/php
+check "bin/php proxies to container" bin/php -r "echo 'ok';"
+check "PHP version is 8.2+" bin/php -r "exit(PHP_VERSION_ID >= 80200 ? 0 : 1);"
+
+echo
+echo "2. PHPStan"
+check "phpstan binary exists" test -f vendor/bin/phpstan
+check "phpstan runs via wrapper" bin/php vendor/bin/phpstan --version
+
+echo
+echo "3. Rector"
+check "rector binary exists" test -f vendor/bin/rector
+check "rector runs via wrapper" bin/php vendor/bin/rector --version
+
+echo
+echo "4. Pre-commit hook"
+check ".git/hooks/pre-commit exists" test -f .git/hooks/pre-commit
+check "pre-commit is executable" test -x .git/hooks/pre-commit
+
+echo
+echo "5. Composer scripts"
+check "phpstan script defined" bash -lc "./vendor/bin/sail composer run-script --list | grep -q 'phpstan'"
+check "rector:dry script defined" bash -lc "./vendor/bin/sail composer run-script --list | grep -q 'rector:dry'"
+
+echo
+if [ "$fail" -eq 0 ]; then
+  echo "All $pass checks passed."
+else
+  echo "$pass passed, $fail failed."
+  exit 1
+fi

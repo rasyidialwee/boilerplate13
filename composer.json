@@ -72,13 +72,23 @@
             "@php artisan test"
         ],
         "analyse": [
-            "vendor/bin/phpstan analyse"
+            "./bin/php vendor/bin/phpstan analyse --no-progress"
+        ],
+        "phpstan": [
+            "./bin/php vendor/bin/phpstan analyse --no-progress"
         ],
         "rector": [
-            "vendor/bin/rector process --dry-run"
+            "./bin/php vendor/bin/rector process"
+        ],
+        "rector:dry": [
+            "./bin/php vendor/bin/rector process --dry-run --no-progress-bar"
         ],
         "rector:fix": [
-            "vendor/bin/rector process"
+            "./bin/php vendor/bin/rector process"
+        ],
+        "lint": [
+            "@phpstan",
+            "@rector:dry"
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",

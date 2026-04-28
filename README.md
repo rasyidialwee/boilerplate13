@@ -185,61 +185,69 @@ VITE_APP_NAME="${APP_NAME}"
 - **Password**: `password`
 - **Database**: Value from `DB_DATABASE` in `.env`
 
-### Code Analysis & Refactoring
+### Code Quality Workflow
 
-This project includes [Larastan](https://github.com/larastan/larastan) (PHPStan for Laravel) for static analysis and [Rector](https://github.com/rectorphp/rector) for automated refactoring.
+Use this as the canonical workflow for code quality checks and fixes.
 
-#### Larastan (Static Analysis)
+#### PHP Tooling via Sail
 
-Larastan adds static analysis capabilities to detect bugs and potential issues in your code before runtime.
+PHP tooling is configured to run through Laravel Sail, so host PHP is not required.
+
+Setup files:
+- `.vscode/settings.json`
+- `bin/php`
+- `bin/verify-php-tooling`
+- `.git/hooks/pre-commit`
+
+After pulling changes, ensure scripts are executable:
 
 ```bash
-# Run Larastan analysis
-sail composer analyse
+chmod +x bin/php bin/verify-php-tooling .git/hooks/pre-commit
 ```
 
-Larastan is configured in `phpstan.neon` with level 5 analysis. It analyzes:
-
-- `app/` - Application code
-- `config/` - Configuration files
-- `database/` - Migrations, seeders, factories
-- `routes/` - Route definitions
-
-#### Rector (Automated Refactoring)
-
-Rector automates code refactoring and can help upgrade your codebase to newer Laravel versions and best practices.
+Verify the full setup:
 
 ```bash
-# Preview changes (dry-run mode)
-sail composer rector
-
-# Apply Rector fixes
-sail composer rector:fix
+./bin/verify-php-tooling
 ```
 
-Rector is configured in `rector.php` and automatically applies Laravel-specific rules based on your Laravel version. It processes:
-
-- `app/` - Application code
-- `config/` - Configuration files
-- `database/` - Migrations, seeders, factories
-- `routes/` - Route definitions
-
-**Note**: Always review the changes in dry-run mode (`composer rector`) before applying fixes (`composer rector:fix`).
-
-#### ESLint and Prettier
-
-This project uses ESLint for code linting and Prettier for code formatting.
+#### PHP Tools
 
 ```bash
-# Run ESLint to check and fix code issues
+# PHPStan static analysis
+./vendor/bin/sail composer phpstan
+
+# Rector preview (dry-run)
+./vendor/bin/sail composer rector
+
+# Rector apply fixes
+./vendor/bin/sail composer rector:fix
+
+# Format changed PHP files
+./vendor/bin/sail pint
+```
+
+- `phpstan`: static analysis to detect type and logic issues.
+- `rector`: preview code changes without writing files.
+- `rector:fix`: apply Rector changes.
+- `pint`: format PHP code to project style.
+
+#### Frontend Tools
+
+```bash
+# ESLint check (with auto-fix where configured)
 sail npm run lint
 
-# Format code with Prettier
+# Prettier format (writes changes)
 sail npm run format
 
-# Check if code is formatted correctly
+# Prettier check-only (no changes)
 sail npm run format:check
 ```
+
+- `lint`: runs ESLint rules for JS/TS/React files.
+- `format`: rewrites files to Prettier style.
+- `format:check`: verifies formatting in CI/check mode.
 
 ESLint is configured in `eslint.config.js` with React, TypeScript, and Prettier integration. Prettier is configured in `.prettierrc` with Tailwind CSS plugin support.
 

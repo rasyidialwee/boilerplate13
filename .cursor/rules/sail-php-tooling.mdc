@@ -1,0 +1,44 @@
+---
+description: PHP tooling (PHPStan, Rector) via Laravel Sail with no host PHP
+globs: "{composer.json,.vscode/settings.json,bin/php,bin/verify-php-tooling,.git/hooks/pre-commit}"
+alwaysApply: false
+---
+
+# PHP Tooling via Laravel Sail
+
+This project does not require PHP on the host. PHP tools run via Sail using `bin/php`.
+
+## Wrapper script
+
+`bin/php` is the required entrypoint for local PHP tooling:
+
+```bash
+exec "$PROJECT_ROOT/vendor/bin/sail" php "$@"
+```
+
+Do not call `php` directly from the host. Use `./bin/php` or `./vendor/bin/sail php`.
+
+## Commands
+
+- PHPStan (terminal): `composer phpstan`
+- Rector fix: `composer rector`
+- Rector check only: `composer rector:dry`
+- Combined checks: `composer lint`
+- Full local verification: `./bin/verify-php-tooling`
+
+## Editor settings
+
+`php.validate.enable` is disabled in `.vscode/settings.json` and PHP-dependent extensions point to `bin/php`.
+
+## Pre-commit
+
+`.git/hooks/pre-commit` runs PHPStan plus Rector dry-run (warnings only; does not block commits) and skips gracefully when Sail is not running.
+
+## Setup checklist for new Laravel Sail projects
+
+1. Copy `bin/php` and `bin/verify-php-tooling`, then run `chmod +x bin/php bin/verify-php-tooling`.
+2. Copy `.vscode/settings.json`.
+3. Copy `.git/hooks/pre-commit`, then run `chmod +x .git/hooks/pre-commit`.
+4. Add scripts to `composer.json`: `phpstan`, `rector`, `rector:dry`, and `lint`.
+5. Install Cursor extensions: `swordev.phpstan` and `emeraldwalk.RunOnSave`.
+6. Run `./bin/verify-php-tooling`.
