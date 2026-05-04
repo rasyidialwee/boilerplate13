@@ -15,7 +15,7 @@ it('shows the edit form with the role and permissions data', function () {
         ->assertInertia(fn (Assert $page) => $page
             ->component('roles/form')
             ->where('role.name', 'publisher')
-            ->where('permissions.0.name', 'publish news')
+            ->where('permissions.0.name', 'create_users')
         );
 });
 

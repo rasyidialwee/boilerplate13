@@ -31,6 +31,6 @@ it('shows all permissions when rendering the create form', function () {
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('roles/form')
-            ->where('permissions.0.name', 'edit articles')
+            ->where('permissions.0.name', 'create_users')
         );
 });

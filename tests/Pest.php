@@ -20,6 +20,7 @@ use Spatie\Permission\PermissionRegistrar;
 pest()->extend(Tests\TestCase::class)
     ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
     ->beforeEach(function (): void {
+        $this->withoutVite();
         $this->seed(\Database\Seeders\RolePermissionSeeder::class);
     })
     ->in('Feature');

@@ -1,8 +1,19 @@
 import { InertiaLinkProps } from '@inertiajs/react';
 import { LucideIcon } from 'lucide-react';
 
+/** Mirrors canonical abilities used by the shell UI; see RolePermissionSeeder. */
+export interface AuthCan {
+    view_users: boolean;
+    view_activity_logs: boolean;
+    manage_system_settings: boolean;
+    manage_roles: boolean;
+    view_telescope: boolean;
+    view_horizon: boolean;
+}
+
 export interface Auth {
-    user: User;
+    user: User | null;
+    can: AuthCan | null;
 }
 
 export interface BreadcrumbItem {

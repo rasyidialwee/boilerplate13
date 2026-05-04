@@ -2,12 +2,27 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
 {
+    /**
+     * @return array<string, bool>
+     */
+    protected function authorizationMap(User $user): array
+    {
+        return [
+            'view_users' => $user->can('view_users'),
+            'view_activity_logs' => $user->can('view_activity_logs'),
+            'manage_system_settings' => $user->can('manage_system_settings'),
+            'manage_roles' => $user->can('manage_roles'),
+            'view_telescope' => $user->can('view_telescope'),
+            'view_horizon' => $user->can('view_horizon'),
+        ];
+    }
     /**
      * The root template that's loaded on the first page visit.
      *
@@ -57,6 +72,7 @@ class HandleInertiaRequests extends Middleware
                     ...$user->toArray(),
                     'role' => $user->role,
                 ] : null,
+                'can' => $user instanceof User ? $this->authorizationMap($user) : null,
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'unreadNotifications' => $unreadNotifications,

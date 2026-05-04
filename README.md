@@ -4,9 +4,10 @@ A modern Laravel 12 application with React and TypeScript, powered by Inertia.js
 
 ## 🚀 Tech Stack
 
-- **Backend**: Laravel 12 (PHP 8.4+)
+- **Backend**: Laravel 12 (PHP **^8.2** in `composer.json`; the Sail image ships **PHP 8.4**)
 - **Frontend**: React 19 with TypeScript
 - **Framework**: Inertia.js
+- **Routing / client URLs**: [Laravel Wayfinder](https://github.com/laravel/wayfinder) (generated actions and route helpers)
 - **Styling**: Tailwind CSS 4
 - **Build Tool**: Vite
 - **Containerization**: Laravel Sail (Docker)
@@ -15,10 +16,16 @@ A modern Laravel 12 application with React and TypeScript, powered by Inertia.js
 - **Queue**: Redis (via Laravel Horizon)
 - **Websockets**: Laravel Reverb
 - **Email Testing**: Mailpit
-- **Code Quality**: Larastan (PHPStan), Rector
+- **Code Quality**: Larastan (PHPStan), Rector, Laravel Pint
+- **Testing**: Pest 4, Pest architecture plugin (`pestphp/pest-plugin-arch`)
 - **Permissions**: Spatie Laravel Permission
+- **Activity**: Spatie Laravel Activity Log
+- **API filtering**: Spatie Laravel Query Builder
+- **Settings**: Spatie Laravel Settings
+- **Media & uploads**: [Spatie Laravel Media Library](https://spatie.be/docs/laravel-medialibrary), [Laravel Media Secure](https://github.com/cleaniquecoders/laravel-media-secure), [Traitify](https://github.com/cleaniquecoders/traitify) (shared UUIDs on models)
 - **Frontend Tools**: ESLint, Prettier
 - **Form Validation**: Laravel Precognition (real-time validation)
+- **DX (dev)**: Laravel Boost, Laravel Pail
 
 ## 📋 Prerequisites
 
@@ -28,18 +35,22 @@ Before you begin, ensure you have the following installed:
 - [Git](https://git-scm.com/downloads)
 - (Optional) [Node.js](https://nodejs.org/) and [Composer](https://getcomposer.org/) if you prefer not to use Sail
 
+Commands below use **`./vendor/bin/sail`**. If you use a shell alias, you can substitute `sail` instead.
+
 ## 🛠️ Installation
 
 ### 1. Clone the Repository
 
 ```bash
 git clone <repository-url>
-cd boilerplate12
+cd boilerplate13
 ```
+
+Use your real project directory name if it differs.
 
 ### 2. Install Dependencies with Composer
 
-**First-time setup** - Run this command to install Composer dependencies using Docker (required before using Sail):
+**First-time setup** — run this to install Composer dependencies with Docker (required before Sail is available):
 
 ```bash
 docker run --rm \
@@ -61,80 +72,82 @@ cp .env.example .env
 ### 4. Generate Application Key
 
 ```bash
-sail artisan key:generate
+./vendor/bin/sail artisan key:generate
 ```
 
 ### 5. Install Node Dependencies
 
 ```bash
-sail npm install
+./vendor/bin/sail npm install
 ```
 
-### 6. Build Assets
+### 6. Build or Run Frontend Assets
 
 ```bash
-sail npm run dev
+./vendor/bin/sail npm run dev
 ```
 
-### 7. Run Database Migrations and seeding
+### 7. Run Database Migrations and Seeding
+
+Initial migrate and seed:
 
 ```bash
-sail artisan migrate --seed
+./vendor/bin/sail artisan migrate --seed
 ```
 
-or run migrate:fresh for re seed
+To rebuild the database from scratch and re-seed (destructive):
 
 ```bash
-sail artisan migrate:fresh --seed
+./vendor/bin/sail artisan migrate:fresh --seed
 ```
 
 This seeds roles (`superadmin`, `admin`, `user`) and canonical permissions from [`database/seeders/RolePermissionSeeder.php`](database/seeders/RolePermissionSeeder.php). Assign roles or permissions as needed for each environment.
 
 ## 🏃 Starting Development
 
-### Using Laravel Sail (Recommended)
+### Using Laravel Sail (recommended)
 
-Start all services:
+Start Docker services:
 
 ```bash
 ./vendor/bin/sail up -d
 ```
 
-Or use the shorter alias (if configured):
+Or use a shorter alias if you have one configured:
 
 ```bash
 sail up -d
 ```
 
-This will start:
+This typically exposes:
 
-- **Laravel Application**: `http://localhost` (or port specified in `APP_PORT`)
-- **Vite Dev Server**: `http://localhost:5173`
-- **MySQL**: Port `3306`
-- **Redis**: Port `6379`
-- **Mailpit Dashboard**: `http://localhost:8025`
+- **Laravel application**: `http://localhost` (or the host/port from `APP_URL` / `APP_PORT` in `.env`)
+- **Vite dev server**: `http://localhost:5173` (see `VITE_*` in `.env` if you customize ports)
+- **MySQL**: `localhost:3306`
+- **Redis**: `localhost:6379`
+- **Mailpit**: `http://localhost:8025`
 
-**Note**: Reverb websocket server should be started separately with `sail artisan reverb:start`
+**One-command local stack** (PHP built-in server, queue listener, and Vite via `concurrently`):
 
-
-# Liner, Code Format and Types Check
+```bash
+./vendor/bin/sail composer run dev
 ```
-# Linter
-sail npm run lint
 
-# Format code
-sail npm run format
+That runs the `dev` script from `composer.json` inside Sail. Start dependencies first with `./vendor/bin/sail up -d` (MySQL, Redis, etc.). For a more traditional flow, keep containers up and run `./vendor/bin/sail npm run dev` in another terminal instead of or in addition to this script, depending on how you serve PHP (e.g. Nginx in Sail vs. `artisan serve` in `dev`).
 
-# Type checking
-sail npm run types
+**Reverb** is not started by `sail up` by default. Start it when you need websockets:
+
+```bash
+./vendor/bin/sail artisan reverb:start
 ```
+
 ## 🔧 Available Services
 
-When running `sail up`, the following services are available:
+When `./vendor/bin/sail up` is running, typical services are:
 
 | Service         | URL/Port                     | Description                                           |
 | --------------- | ---------------------------- | ----------------------------------------------------- |
-| **Laravel App** | `http://localhost`           | Main application                                      |
+| **Laravel App** | `http://localhost`           | Main application (respects `APP_PORT` / `APP_URL`)   |
 | **Vite**        | `http://localhost:5173`      | Frontend development server                           |
 | **MySQL**       | `localhost:3306`             | Database server                                       |
 | **Redis**       | `localhost:6379`             | Cache and session store                               |
@@ -142,6 +155,8 @@ When running `sail up`, the following services are available:
 | **Horizon**     | `http://localhost/horizon`   | Queue management dashboard (requires permission)      |
 | **Telescope**   | `http://localhost/telescope` | Application debugging dashboard (requires permission) |
 | **Reverb**      | `localhost:8080`             | WebSocket server (run via `artisan reverb:start`)     |
+
+Exact URLs and ports follow your `.env` and Sail `docker-compose.yml`.
 
 ## 📝 Environment Configuration
 
@@ -185,15 +200,12 @@ VITE_APP_NAME="${APP_NAME}"
 - **Password**: `password`
 - **Database**: Value from `DB_DATABASE` in `.env`
 
-### Code Quality Workflow
+## Code Quality Workflow
 
-Use this as the canonical workflow for code quality checks and fixes.
+Use this as the canonical workflow for checks and fixes. PHP tooling is intended to run **through Sail** so a host PHP install is not required.
 
-#### PHP Tooling via Sail
+### Setup files
 
-PHP tooling is configured to run through Laravel Sail, so host PHP is not required.
-
-Setup files:
 - `.vscode/settings.json`
 - `bin/php`
 - `bin/verify-php-tooling`
@@ -211,80 +223,94 @@ Verify the full setup:
 ./bin/verify-php-tooling
 ```
 
-#### PHP Tools
+### PHP (Composer scripts via Sail)
 
 ```bash
-# PHPStan static analysis
+# PHPStan (Larastan) static analysis
 ./vendor/bin/sail composer phpstan
 
-# Rector preview (dry-run)
-./vendor/bin/sail composer rector
+# Rector dry-run (no file changes)
+./vendor/bin/sail composer rector:dry
 
-# Rector apply fixes
+# Rector apply refactors (writes files)
+./vendor/bin/sail composer rector
+# same effect:
 ./vendor/bin/sail composer rector:fix
 
-# Format changed PHP files
-./vendor/bin/sail pint
+# Composer "lint": runs PHPStan then Rector dry-run
+./vendor/bin/sail composer lint
+
+# Format PHP with Pint (project style)
+./vendor/bin/sail bin pint
+# format only files changed against git:
+./vendor/bin/sail bin pint --dirty
+
+# Run the test suite
+./vendor/bin/sail composer test
+
+# Architecture-focused Pest file
+./vendor/bin/sail composer test-arch
 ```
 
-- `phpstan`: static analysis to detect type and logic issues.
-- `rector`: preview code changes without writing files.
-- `rector:fix`: apply Rector changes.
-- `pint`: format PHP code to project style.
+- **`phpstan`**: static analysis for types and common issues.
+- **`rector:dry`**: preview Rector changes without writing files.
+- **`rector`** / **`rector:fix`**: both run `rector process` and **apply** changes — commit or review the diff afterward.
+- **`lint`**: runs `phpstan` then `rector:dry` (good for a quick gate before push).
+- **`format`** (Composer): runs Pint **on the host** via `composer format` (`vendor/bin/pint`), not inside the Sail app container. Prefer **`./vendor/bin/sail bin pint`** when you want formatting inside the same environment as the rest of Sail.
 
-#### Frontend Tools
+Architecture rules live in [`tests/Unit/ArchitectureTest.php`](tests/Unit/ArchitectureTest.php).
+
+### Frontend (npm via Sail)
 
 ```bash
-# ESLint check (with auto-fix where configured)
-sail npm run lint
+# ESLint (with auto-fix where configured)
+./vendor/bin/sail npm run lint
 
-# Prettier format (writes changes)
-sail npm run format
+# Prettier — write formatted files
+./vendor/bin/sail npm run format
 
-# Prettier check-only (no changes)
-sail npm run format:check
+# Prettier — check only (CI-style)
+./vendor/bin/sail npm run format:check
+
+# TypeScript check
+./vendor/bin/sail npm run types
 ```
 
-- `lint`: runs ESLint rules for JS/TS/React files.
-- `format`: rewrites files to Prettier style.
-- `format:check`: verifies formatting in CI/check mode.
+- **`lint`**: ESLint for JS/TS/React.
+- **`format`**: Prettier write mode.
+- **`format:check`**: Prettier without modifying files.
+- **`types`**: TypeScript compiler check.
 
 ESLint is configured in `eslint.config.js` with React, TypeScript, and Prettier integration. Prettier is configured in `.prettierrc` with Tailwind CSS plugin support.
 
-### Laravel Precognition
+## Laravel Precognition
 
 This project uses [Laravel Precognition](https://laravel.com/docs/12.x/precognition) for real-time form validation. Precognition provides instant validation feedback as users type, without requiring a full form submission.
 
+## Queue Management (Laravel Horizon)
 
-
-
-
-
-
-### Queue Management (Laravel Horizon)
-
-Horizon provides a dashboard and monitoring for your Redis queues. Access it at `http://localhost/horizon` (requires permission: `view_horizon`).
+Horizon provides a dashboard and monitoring for your Redis queues. Access it at `http://localhost/horizon` (or your `APP_URL` equivalent; requires permission: `view_horizon`).
 
 ```bash
 # Start Horizon
-sail artisan horizon
+./vendor/bin/sail artisan horizon
 
 # Pause Horizon
-sail artisan horizon:pause
+./vendor/bin/sail artisan horizon:pause
 
 # Continue Horizon
-sail artisan horizon:continue
+./vendor/bin/sail artisan horizon:continue
 
 # Terminate Horizon
-sail artisan horizon:terminate
+./vendor/bin/sail artisan horizon:terminate
 
 # View Horizon status
-sail artisan horizon:status
+./vendor/bin/sail artisan horizon:status
 ```
 
 **Note**: Only users with the `view_horizon` permission can access the Horizon dashboard (included on the `superadmin` role by default; extend seeders or roles if others should see it).
 
-### Application Debugging (Laravel Telescope)
+## Application Debugging (Laravel Telescope)
 
 Telescope provides insights into your application's requests, commands, jobs, and more. Access it at `http://localhost/telescope` (requires permission: `view_telescope`).
 
@@ -292,26 +318,26 @@ Telescope is enabled in both development and production environments. Access is 
 
 **Note**: Only users with the `view_telescope` permission can access the Telescope dashboard (included on the `superadmin` role by default).
 
-### WebSockets (Laravel Reverb)
+## WebSockets (Laravel Reverb)
 
 Reverb provides a WebSocket server for real-time features. Start it with:
 
 ```bash
 # Start Reverb server
-sail artisan reverb:start
+./vendor/bin/sail artisan reverb:start
 
 # Start Reverb in development mode (with debugging)
-sail artisan reverb:start --debug
+./vendor/bin/sail artisan reverb:start --debug
 
 # Start Reverb with specific host and port
-sail artisan reverb:start --host=0.0.0.0 --port=8080
+./vendor/bin/sail artisan reverb:start --host=0.0.0.0 --port=8080
 ```
 
 Reverb configuration is in `config/reverb.php` and can be customized via environment variables in `.env`.
 
-### Permissions (Spatie Laravel Permission)
+## Permissions (Spatie Laravel Permission)
 
-This project uses Spatie Laravel Permission. All permission names are **snake_case** and defined in `RolePermissionSeeder` (run `sail artisan migrate --seed` or `db:seed` after changes).
+This project uses Spatie Laravel Permission. All permission names are **snake_case** and defined in `RolePermissionSeeder` (run `./vendor/bin/sail artisan migrate --seed` or `db:seed` after changes).
 
 **Seeded roles (default):**
 
@@ -331,34 +357,68 @@ This project uses Spatie Laravel Permission. All permission names are **snake_ca
 
 ```bash
 # Create a single permission
-sail artisan permission:create-permission "permission name"
+./vendor/bin/sail artisan permission:create-permission "permission name"
 
 # Create a role
-sail artisan permission:create-role "role name"
+./vendor/bin/sail artisan permission:create-role "role name"
 
 # Assign a role to a user
-sail artisan permission:assign-role
+./vendor/bin/sail artisan permission:assign-role
 
 # Show a table of roles and permissions
-sail artisan permission:show
+./vendor/bin/sail artisan permission:show
 
 # Reset the permission cache
-sail artisan permission:cache-reset
+./vendor/bin/sail artisan permission:cache-reset
 ```
+
+## Media uploads (Spatie Media Library, Media Secure, Traitify)
+
+Uploads are modeled with **Spatie Media Library**. Secure URLs (`/media/{type}/{uuid}`) are handled by **Laravel Media Secure**, which delegates authorization to your **parent model policy** when `strict` mode is enabled (see `config/laravel-media-secure.php`). The sample **`Document`** model uses **Traitify** for a `uuid` column and registers a **single-file** `default` collection.
+
+**Setup:**
+
+```bash
+./vendor/bin/sail artisan migrate
+```
+
+Publish / vendor assets (already committed where applicable):
+
+```bash
+./vendor/bin/sail artisan vendor:publish --provider="Spatie\MediaLibrary\MediaLibraryServiceProvider" --tag="medialibrary-migrations"
+./vendor/bin/sail artisan vendor:publish --tag="media-secure-config"
+./vendor/bin/sail artisan vendor:publish --provider="CleaniqueCoders\Traitify\TraitifyServiceProvider"
+```
+
+**Useful env keys** (optional overrides — defaults are in `config/laravel-media-secure.php`):
+
+```env
+LARAVEL_MEDIA_SECURE_REQUIRE_AUTH=true
+LARAVEL_MEDIA_SECURE_STRICT=true
+LARAVEL_MEDIA_SECURE_SIGNED_ENABLED=true
+LARAVEL_MEDIA_SECURE_SIGNED_EXPIRATION=60
+```
+
+**Further reading:**
+
+- [Spatie Laravel Media Library](https://spatie.be/docs/laravel-medialibrary)
+- [Laravel Media Secure](https://github.com/cleaniquecoders/laravel-media-secure)
+- [Traitify](https://github.com/cleaniquecoders/traitify)
 
 ## 🛑 Stopping Services
 
 To stop all Sail services:
 
 ```bash
-sail down
+./vendor/bin/sail down
 ```
 
-To stop and remove volumes (⚠️ this will delete database data):
+To stop and remove volumes (this will delete database data):
 
 ```bash
-sail down -v
+./vendor/bin/sail down -v
 ```
+
 ## 📚 Additional Resources
 
 - [Laravel Documentation](https://laravel.com/docs)
@@ -366,10 +426,17 @@ sail down -v
 - [Laravel Horizon Documentation](https://laravel.com/docs/horizon)
 - [Laravel Telescope Documentation](https://laravel.com/docs/telescope)
 - [Laravel Reverb Documentation](https://laravel.com/docs/reverb)
+- [Laravel Wayfinder](https://github.com/laravel/wayfinder)
 - [Inertia.js Documentation](https://inertiajs.com/)
 - [React Documentation](https://react.dev/)
 - [Vite Documentation](https://vitejs.dev/)
-- [Spatie Laravel Permission Documentation](https://spatie.be/docs/laravel-permission)
+- [Spatie Laravel Permission](https://spatie.be/docs/laravel-permission)
+- [Spatie Laravel Activity Log](https://spatie.be/docs/laravel-activitylog)
+- [Spatie Laravel Query Builder](https://spatie.be/docs/laravel-query-builder)
+- [Spatie Laravel Settings](https://github.com/spatie/laravel-settings)
+- [Spatie Laravel Media Library](https://spatie.be/docs/laravel-medialibrary)
+- [Laravel Media Secure (GitHub)](https://github.com/cleaniquecoders/laravel-media-secure)
+- [Traitify (GitHub)](https://github.com/cleaniquecoders/traitify)
 - [ESLint Documentation](https://eslint.org/)
 - [Prettier Documentation](https://prettier.io/)
 - [Larastan Documentation](https://github.com/larastan/larastan)

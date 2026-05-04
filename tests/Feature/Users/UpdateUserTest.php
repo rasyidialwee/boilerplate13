@@ -28,7 +28,8 @@ it('includes the available roles when editing a user', function () {
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('users/form')
-            ->where('roles.0.name', 'reviewer')
+            ->where('roles.0.name', 'admin')
+            ->where('roles', fn ($roles) => collect($roles)->pluck('name')->contains('reviewer'))
         );
 });
 

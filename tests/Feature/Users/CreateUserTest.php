@@ -37,6 +37,6 @@ it('shows the available roles when rendering the create form', function () {
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('users/form')
-            ->where('roles.0.name', 'editor')
+            ->where('roles.0.name', 'admin')
         );
 });

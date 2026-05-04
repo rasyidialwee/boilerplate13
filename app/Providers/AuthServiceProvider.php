@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\Document;
 use App\Models\User;
 use App\Policies\ActivityLogPolicy;
+use App\Policies\DocumentPolicy;
 use App\Policies\RolePolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
@@ -21,6 +23,7 @@ class AuthServiceProvider extends ServiceProvider
         User::class => UserPolicy::class,
         Activity::class => ActivityLogPolicy::class,
         Role::class => RolePolicy::class,
+        Document::class => DocumentPolicy::class,
     ];
 
     /**

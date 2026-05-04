@@ -12,3 +12,15 @@ arch('policies are suffixed with Policy')
 arch('forbids debug helpers in application code')
     ->expect('App')
     ->not->toUse(['dd', 'dump', 'ray']);
+
+arch('forbids debug helpers in factories')
+    ->expect('Database\Factories')
+    ->not->toUse(['dd', 'dump', 'ray']);
+
+arch('forbids debug helpers in seeders')
+    ->expect('Database\Seeders')
+    ->not->toUse(['dd', 'dump', 'ray']);
+
+arch('forbids env helper outside application layer')
+    ->expect('App')
+    ->not->toUse(['env']);

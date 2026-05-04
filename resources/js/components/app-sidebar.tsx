@@ -18,8 +18,7 @@ import AppLogo from './app-logo';
 
 export function AppSidebar() {
     const { auth } = usePage<SharedData>().props;
-    const isSuperAdmin = auth.user?.role === 'superadmin';
-    const isAdmin = auth.user?.role === 'admin' || isSuperAdmin;
+    const can = auth.can;
 
     const mainNavItems: NavItem[] = [
         {
@@ -27,7 +26,7 @@ export function AppSidebar() {
             href: dashboard(),
             icon: LayoutGrid,
         },
-        ...(isAdmin
+        ...(can?.view_users
             ? [
                   {
                       title: 'Users',
@@ -39,13 +38,17 @@ export function AppSidebar() {
     ];
 
     const footerNavItems: NavItem[] = [
-        ...(isAdmin
+        ...(can?.view_activity_logs
             ? [
                   {
                       title: 'Activity Logs',
                       href: '/activity-logs',
                       icon: FileText,
                   } as NavItem,
+              ]
+            : []),
+        ...(can?.manage_system_settings
+            ? [
                   {
                       title: 'Settings',
                       href: '/settings/system',
@@ -53,7 +56,7 @@ export function AppSidebar() {
                   } as NavItem,
               ]
             : []),
-        ...(isSuperAdmin
+        ...(can?.manage_roles
             ? [
                   {
                       title: 'Roles',
