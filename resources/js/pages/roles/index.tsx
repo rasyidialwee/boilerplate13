@@ -198,15 +198,16 @@ export default function RolesIndex({ roles }: RolesIndexProps) {
                         <Info className="mt-0.5 h-5 w-5 text-blue-600 dark:text-blue-400" />
                         <div className="flex-1">
                             <h3 className="text-sm font-medium text-blue-900 dark:text-blue-100">
-                                Auto-Generated Permissions
+                                Permissions
                             </h3>
                             <p className="mt-1 text-sm text-blue-700 dark:text-blue-300">
-                                Permissions are automatically generated based on
-                                models and actions. Use the command{' '}
+                                Permissions are defined in{' '}
                                 <code className="rounded bg-blue-100 px-1.5 py-0.5 font-mono text-xs dark:bg-blue-900">
-                                    sail artisan permissions:generate
+                                    database/seeders/RolePermissionSeeder.php
                                 </code>{' '}
-                                to generate permissions.
+                                and assigned to roles here. Adjust the seeder when
+                                you add new abilities, then run migrations and
+                                seed.
                             </p>
                         </div>
                     </div>

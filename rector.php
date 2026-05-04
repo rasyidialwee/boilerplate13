@@ -11,7 +11,9 @@ return RectorConfig::configure()
         __DIR__.'/config',
         __DIR__.'/database',
         __DIR__.'/routes',
+        __DIR__.'/tests',
     ])
+    ->withCache(__DIR__.'/storage/rector')
     ->withSkip([
         __DIR__.'/vendor',
         __DIR__.'/storage',

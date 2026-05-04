@@ -32,7 +32,7 @@ class HorizonServiceProvider extends HorizonApplicationServiceProvider
                 return false;
             }
 
-            return $user->hasPermissionTo('view horizon');
+            return $user->hasPermissionTo('view_horizon');
         });
     }
 }

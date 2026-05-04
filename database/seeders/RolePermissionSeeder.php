@@ -9,26 +9,60 @@ use Spatie\Permission\Models\Role;
 class RolePermissionSeeder extends Seeder
 {
     /**
+     * Canonical permission names (snake_case). Keep in sync with policies and Horizon/Telescope gates.
+     *
+     * @var array<int, string>
+     */
+    protected array $permissionNames = [
+        'view_telescope',
+        'view_horizon',
+        'manage_system_settings',
+        'view_activity_logs',
+        'view_users',
+        'create_users',
+        'edit_users',
+        'delete_users',
+        'manage_roles',
+    ];
+
+    /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        // Create permissions
-        Permission::firstOrCreate(['name' => 'view telescope']);
-        Permission::firstOrCreate(['name' => 'view horizon']);
-        Permission::firstOrCreate(['name' => 'can-manage-system-settings']);
-        Permission::firstOrCreate(['name' => 'view_activity_logs']);
+        foreach ($this->permissionNames as $name) {
+            Permission::firstOrCreate([
+                'name' => $name,
+                'guard_name' => 'web',
+            ]);
+        }
 
-        // Create roles
-        $superadmin = Role::firstOrCreate(['name' => 'superadmin']);
-        $admin = Role::firstOrCreate(['name' => 'admin']);
-        $user = Role::firstOrCreate(['name' => 'user']);
+        $superadmin = Role::firstOrCreate([
+            'name' => 'superadmin',
+            'guard_name' => 'web',
+        ]);
 
-        // Assign permissions to roles
-        $superadmin->givePermissionTo('can-manage-system-settings');
-        $superadmin->givePermissionTo('view_activity_logs');
-        $admin->givePermissionTo('can-manage-system-settings');
-        $admin->givePermissionTo('view_activity_logs');
+        $admin = Role::firstOrCreate([
+            'name' => 'admin',
+            'guard_name' => 'web',
+        ]);
 
+        $user = Role::firstOrCreate([
+            'name' => 'user',
+            'guard_name' => 'web',
+        ]);
+
+        $superadmin->syncPermissions($this->permissionNames);
+
+        $admin->syncPermissions([
+            'manage_system_settings',
+            'view_activity_logs',
+            'view_users',
+            'create_users',
+            'edit_users',
+            'delete_users',
+        ]);
+
+        $user->syncPermissions([]);
     }
 }

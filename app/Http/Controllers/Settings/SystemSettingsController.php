@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Settings\SystemSettings;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -17,7 +16,7 @@ class SystemSettingsController extends Controller
      */
     public function index(Request $request): Response
     {
-        Gate::authorize('can-manage-system-settings');
+        $this->authorize('manage_system_settings');
 
         $settings = app(SystemSettings::class);
 
@@ -33,7 +32,7 @@ class SystemSettingsController extends Controller
      */
     public function update(Request $request): RedirectResponse
     {
-        Gate::authorize('can-manage-system-settings');
+        $this->authorize('manage_system_settings');
 
         $validated = $request->validate([
             'registration_enabled' => ['required', 'boolean'],

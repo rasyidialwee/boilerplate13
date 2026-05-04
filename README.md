@@ -88,7 +88,7 @@ or run migrate:fresh for re seed
 sail artisan migrate:fresh --seed
 ```
 
-This will create initial roles (admin, user) and permissions (view telescope, view horizon). Only the admin role has access to Telescope and Horizon dashboards. Assign roles to users as needed.
+This seeds roles (`superadmin`, `admin`, `user`) and canonical permissions from [`database/seeders/RolePermissionSeeder.php`](database/seeders/RolePermissionSeeder.php). Assign roles or permissions as needed for each environment.
 
 ## 🏃 Starting Development
 
@@ -263,7 +263,7 @@ This project uses [Laravel Precognition](https://laravel.com/docs/12.x/precognit
 
 ### Queue Management (Laravel Horizon)
 
-Horizon provides a dashboard and monitoring for your Redis queues. Access it at `http://localhost/horizon` (requires permission: `view horizon`).
+Horizon provides a dashboard and monitoring for your Redis queues. Access it at `http://localhost/horizon` (requires permission: `view_horizon`).
 
 ```bash
 # Start Horizon
@@ -282,15 +282,15 @@ sail artisan horizon:terminate
 sail artisan horizon:status
 ```
 
-**Note**: Only users with the `view horizon` permission can access the Horizon dashboard. Assign the `admin` role to grant access.
+**Note**: Only users with the `view_horizon` permission can access the Horizon dashboard (included on the `superadmin` role by default; extend seeders or roles if others should see it).
 
 ### Application Debugging (Laravel Telescope)
 
-Telescope provides insights into your application's requests, commands, jobs, and more. Access it at `http://localhost/telescope` (requires permission: `view telescope`).
+Telescope provides insights into your application's requests, commands, jobs, and more. Access it at `http://localhost/telescope` (requires permission: `view_telescope`).
 
-Telescope is enabled in both development and production environments. Access is controlled via Spatie permissions - users must have the `view telescope` permission.
+Telescope is enabled in both development and production environments. Access is controlled via Spatie permissions — users must have the `view_telescope` permission.
 
-**Note**: Only users with the `view telescope` permission can access the Telescope dashboard. Assign the `admin` role to grant access.
+**Note**: Only users with the `view_telescope` permission can access the Telescope dashboard (included on the `superadmin` role by default).
 
 ### WebSockets (Laravel Reverb)
 
@@ -311,29 +311,23 @@ Reverb configuration is in `config/reverb.php` and can be customized via environ
 
 ### Permissions (Spatie Laravel Permission)
 
-This project uses Spatie Laravel Permission for role-based access control. Initial roles and permissions are seeded via `RolePermissionSeeder`.
+This project uses Spatie Laravel Permission. All permission names are **snake_case** and defined in `RolePermissionSeeder` (run `sail artisan migrate --seed` or `db:seed` after changes).
 
-**Initial Roles:**
+**Seeded roles (default):**
 
-- `admin` - Has access to Telescope and Horizon dashboards
-- `user` - Normal user with no special dashboard access
+- `superadmin` — all permissions
+- `admin` — `manage_system_settings`, `view_activity_logs`, and full user CRUD permissions (`view_users`, `create_users`, `edit_users`, `delete_users`)
+- `user` — no extra permissions
 
-**Initial Permissions:**
+**Seeded permissions (default):**
 
-- `view telescope` - Access to Telescope dashboard (admin only)
-- `view horizon` - Access to Horizon dashboard (admin only)
+- `view_telescope`, `view_horizon` — dashboard access (only `superadmin` by default)
+- `manage_system_settings` — system settings page
+- `view_activity_logs` — activity log UI
+- `view_users`, `create_users`, `edit_users`, `delete_users` — user management
+- `manage_roles` — role management (only `superadmin` by default)
 
-**Generating Permissions:**
-
-You can automatically generate permissions based on your models and actions using:
-
-```bash
-sail artisan permissions:generate
-```
-
-This command will create permissions automatically based on models and actions (e.g., "create users", "edit users", "delete users"). This is useful for quickly setting up CRUD permissions for your resources.
-
-**Other Permission Commands:**
+**Other Spatie permission commands:**
 
 ```bash
 # Create a single permission

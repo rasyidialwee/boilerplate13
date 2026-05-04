@@ -9,7 +9,6 @@ use App\Http\Requests\Roles\StoreRoleRequest;
 use App\Http\Requests\Roles\UpdateRoleRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
 use Spatie\Permission\Models\Permission;
@@ -24,7 +23,7 @@ class RoleController extends Controller
      */
     public function index(Request $request): Response
     {
-        Gate::authorize('access-superadmin');
+        $this->authorize('viewAny', Role::class);
 
         $perPage = $request->get('per_page', 10);
         $perPage = in_array($perPage, [10, 25, 50, 100]) ? (int) $perPage : 10;
@@ -54,7 +53,7 @@ class RoleController extends Controller
      */
     public function create(Request $request): Response
     {
-        Gate::authorize('access-superadmin');
+        $this->authorize('create', Role::class);
 
         $permissions = Permission::orderBy('name')->get();
 
@@ -68,7 +67,7 @@ class RoleController extends Controller
      */
     public function store(StoreRoleRequest $request, CreateRole $createRole): RedirectResponse
     {
-        Gate::authorize('access-superadmin');
+        $this->authorize('create', Role::class);
 
         $createRole->handle($request->validated());
 
@@ -80,7 +79,7 @@ class RoleController extends Controller
      */
     public function show(Request $request, Role $role): Response
     {
-        Gate::authorize('access-superadmin');
+        $this->authorize('view', $role);
 
         $role->load('permissions');
 
@@ -94,7 +93,7 @@ class RoleController extends Controller
      */
     public function edit(Request $request, Role $role): Response
     {
-        Gate::authorize('access-superadmin');
+        $this->authorize('update', $role);
 
         $role->load('permissions');
         $permissions = Permission::orderBy('name')->get();
@@ -110,7 +109,7 @@ class RoleController extends Controller
      */
     public function update(UpdateRoleRequest $request, Role $role, UpdateRole $updateRole): RedirectResponse
     {
-        Gate::authorize('access-superadmin');
+        $this->authorize('update', $role);
 
         $updateRole->handle($role, $request->validated());
 
@@ -122,7 +121,7 @@ class RoleController extends Controller
      */
     public function destroy(Role $role, DeleteRole $deleteRole): RedirectResponse
     {
-        Gate::authorize('access-superadmin');
+        $this->authorize('delete', $role);
 
         $deleteRole->handle($role);
 

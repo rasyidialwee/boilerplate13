@@ -71,6 +71,9 @@
             "@php artisan config:clear --ansi",
             "@php artisan test"
         ],
+        "format": [
+            "@php vendor/bin/pint"
+        ],
         "analyse": [
             "./bin/php vendor/bin/phpstan analyse --no-progress"
         ],

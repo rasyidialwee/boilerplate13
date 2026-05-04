@@ -26,7 +26,7 @@ class ActivityLogPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->hasRole('admin') || $user->hasRole('superadmin');
+        return $user->hasPermissionTo('view_activity_logs');
     }
 
     /**
@@ -34,6 +34,6 @@ class ActivityLogPolicy
      */
     public function view(User $user, Activity $activityLog): bool
     {
-        return $user->hasRole('admin') || $user->hasRole('superadmin');
+        return $user->hasPermissionTo('view_activity_logs');
     }
 }

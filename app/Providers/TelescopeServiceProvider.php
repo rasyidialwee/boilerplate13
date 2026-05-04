@@ -60,7 +60,7 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
                 return false;
             }
 
-            return $user->hasPermissionTo('view telescope');
+            return $user->hasPermissionTo('view_telescope');
         });
     }
 }

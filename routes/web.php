@@ -1,5 +1,17 @@
 <?php
 
+/*
+|--------------------------------------------------------------------------
+| Web routes
+|--------------------------------------------------------------------------
+|
+| Core authenticated routes live here. Additional route modules are loaded
+| from bootstrap/app.php (e.g. routes/settings.php, routes/account.php).
+| When adding large route groups, prefer new files under routes/ and
+| register them in bootstrap/app.php so this file stays focused.
+|
+*/
+
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\RoleController;
