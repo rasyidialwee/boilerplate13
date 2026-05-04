@@ -103,6 +103,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Serializable Classes
+    |--------------------------------------------------------------------------
+    |
+    | When unserializing data from the cache, these classes are allowed. Set to
+    | false to disable unserializing arbitrary objects (recommended). If you
+    | store specific PHP objects in cache, list their class names here.
+    |
+    */
+
+    'serializable_classes' => false,
+
+    /*
+    |--------------------------------------------------------------------------
     | Cache Key Prefix
     |--------------------------------------------------------------------------
     |

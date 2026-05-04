@@ -1,10 +1,10 @@
-# Laravel 12 React Starter Kit
+# Laravel 13 React Starter Kit
 
-A modern Laravel 12 application with React and TypeScript, powered by Inertia.js and Tailwind CSS. This project uses Laravel Sail for a seamless Docker-based development environment.
+A modern Laravel 13 application with React and TypeScript, powered by Inertia.js and Tailwind CSS. This project uses Laravel Sail for a seamless Docker-based development environment.
 
 ## 🚀 Tech Stack
 
-- **Backend**: Laravel 12 (PHP **^8.2** in `composer.json`; the Sail image ships **PHP 8.4**)
+- **Backend**: Laravel 13 (PHP **^8.3** in `composer.json`; the Sail image ships **PHP 8.4**)
 - **Frontend**: React 19 with TypeScript
 - **Framework**: Inertia.js
 - **Routing / client URLs**: [Laravel Wayfinder](https://github.com/laravel/wayfinder) (generated actions and route helpers)
@@ -213,7 +213,7 @@ ESLint is configured in `eslint.config.js` with React, TypeScript, and Prettier 
 
 ## Laravel Precognition
 
-This project uses [Laravel Precognition](https://laravel.com/docs/12.x/precognition) for real-time form validation. Precognition provides instant validation feedback as users type, without requiring a full form submission.
+This project uses [Laravel Precognition](https://laravel.com/docs/13.x/precognition) for real-time form validation. Precognition provides instant validation feedback as users type, without requiring a full form submission.
 
 ## Queue Management (Laravel Horizon)
 
@@ -369,7 +369,7 @@ To stop and remove volumes (this will delete database data):
 - [Prettier Documentation](https://prettier.io/)
 - [Larastan Documentation](https://github.com/larastan/larastan)
 - [Rector Laravel Documentation](https://github.com/driftingly/rector-laravel)
-- [Laravel Precognition Documentation](https://laravel.com/docs/12.x/precognition)
+- [Laravel Precognition Documentation](https://laravel.com/docs/13.x/precognition)
 
 ## 📄 License
 
