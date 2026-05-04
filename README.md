@@ -39,16 +39,23 @@ Commands below use **`./vendor/bin/sail`**. If you use a shell alias, you can su
 
 ## 🛠️ Installation
 
-### 1. Clone the Repository
+### 1. Configure Environment
+
+Copy the example environment file:
 
 ```bash
-git clone <repository-url>
-cd boilerplate13
+cp .env.example .env
 ```
 
-Use your real project directory name if it differs.
+### 2. Copy compose-dev.yaml
 
-### 2. Install Dependencies with Composer
+Copy the example compose file:
+
+```bash
+cp compose-dev.yaml compose.yaml
+```
+
+### 3. Install Dependencies with Composer
 
 **First-time setup** — run this to install Composer dependencies with Docker (required before Sail is available):
 
@@ -61,12 +68,18 @@ docker run --rm \
     composer install --ignore-platform-reqs
 ```
 
-### 3. Configure Environment
+### 5. Starting Development
 
-Copy the example environment file:
+Start Docker services:
 
 ```bash
-cp .env.example .env
+./vendor/bin/sail up -d
+```
+
+Or use a shorter alias if you have one configured:
+
+```bash
+sail up -d
 ```
 
 ### 4. Generate Application Key
@@ -95,29 +108,10 @@ Initial migrate and seed:
 ./vendor/bin/sail artisan migrate --seed
 ```
 
-To rebuild the database from scratch and re-seed (destructive):
-
-```bash
-./vendor/bin/sail artisan migrate:fresh --seed
-```
-
 This seeds roles (`superadmin`, `admin`, `user`) and canonical permissions from [`database/seeders/RolePermissionSeeder.php`](database/seeders/RolePermissionSeeder.php). Assign roles or permissions as needed for each environment.
 
-## 🏃 Starting Development
 
-### Using Laravel Sail (recommended)
 
-Start Docker services:
-
-```bash
-./vendor/bin/sail up -d
-```
-
-Or use a shorter alias if you have one configured:
-
-```bash
-sail up -d
-```
 
 This typically exposes:
 
@@ -156,73 +150,7 @@ When `./vendor/bin/sail up` is running, typical services are:
 | **Telescope**   | `http://localhost/telescope` | Application debugging dashboard (requires permission) |
 | **Reverb**      | `localhost:8080`             | WebSocket server (run via `artisan reverb:start`)     |
 
-Exact URLs and ports follow your `.env` and Sail `docker-compose.yml`.
-
-## 📝 Environment Configuration
-
-Key environment variables to configure in your `.env` file:
-
-```env
-APP_NAME=Laravel
-APP_URL=http://localhost
-
-DB_CONNECTION=mysql
-DB_DATABASE=laravel
-DB_USERNAME=sail
-DB_PASSWORD=password
-
-# Queue Configuration (for Horizon)
-QUEUE_CONNECTION=redis
-
-# Broadcasting Configuration (for Reverb)
-BROADCAST_CONNECTION=reverb
-REVERB_APP_ID=app-id
-REVERB_APP_KEY=app-key
-REVERB_APP_SECRET=app-secret
-REVERB_HOST=localhost
-REVERB_PORT=8080
-REVERB_SCHEME=http
-
-# Telescope Configuration
-TELESCOPE_ENABLED=true
-
-# Horizon Configuration
-HORIZON_PREFIX=horizon
-HORIZON_BALANCE=auto
-
-# Vite will automatically use the correct host
-VITE_APP_NAME="${APP_NAME}"
-```
-
-**Note**: When using Laravel Sail, database credentials default to:
-
-- **Username**: `sail`
-- **Password**: `password`
-- **Database**: Value from `DB_DATABASE` in `.env`
-
 ## Code Quality Workflow
-
-Use this as the canonical workflow for checks and fixes. PHP tooling is intended to run **through Sail** so a host PHP install is not required.
-
-### Setup files
-
-- `.vscode/settings.json`
-- `bin/php`
-- `bin/verify-php-tooling`
-- `.git/hooks/pre-commit`
-
-After pulling changes, ensure scripts are executable:
-
-```bash
-chmod +x bin/php bin/verify-php-tooling .git/hooks/pre-commit
-```
-
-Verify the full setup:
-
-```bash
-./bin/verify-php-tooling
-```
-
 ### PHP (Composer scripts via Sail)
 
 ```bash
